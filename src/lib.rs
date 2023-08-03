@@ -187,7 +187,9 @@ impl<T> LinkedList<T> {
         let node = unsafe { Box::from_raw(tail.as_ptr()) };
 
         if self.len == 1 {
-            *self = LinkedList::new();
+            self.head = None;
+            self.tail = None;
+            self.len = 0;
         } else {
             self.tail = unsafe { tail.as_ref() }.prev;
             self.tail = self.tail.map(|mut tail| {
@@ -210,7 +212,9 @@ impl<T> LinkedList<T> {
         let node = unsafe { Box::from_raw(head.as_ptr()) };
 
         if self.len == 1 {
-            *self = LinkedList::new();
+            self.head = None;
+            self.tail = None;
+            self.len = 0;
         } else {
             self.head = unsafe { head.as_ref() }.next;
             self.len -= 1;
