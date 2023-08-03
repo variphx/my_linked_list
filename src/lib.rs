@@ -157,24 +157,24 @@ impl<T> LinkedList<T> {
             return self.push_back(key);
         }
 
-        if at > (self.len() / 2) {
-            let mut post_node = unsafe { self.tail.unwrap_unchecked() };
-            let mut prev_node = unsafe { post_node.as_ref().prev.unwrap_unchecked() };
+        let mut prev_node = unsafe { self.head.unwrap_unchecked() };
+        let mut post_node = unsafe { prev_node.as_ref().next.unwrap_unchecked() };
 
-            for _ in at..self.len {
-                post_node = prev_node;
-                prev_node = unsafe { prev_node.as_ref().prev.unwrap_unchecked() };
-            }
-
-            let node = NonNull::new(Box::into_raw(Box::new(Node {
-                key,
-                prev: Some(prev_node),
-                next: Some(post_node),
-            })));
-
-            unsafe { post_node.as_mut() }.prev = node;
-            unsafe { prev_node.as_mut() }.next = node;
+        for _ in 1..at {
+            prev_node = post_node;
+            post_node = unsafe { post_node.as_ref().next.unwrap_unchecked() };
         }
+
+        let node = NonNull::new(Box::into_raw(Box::new(Node {
+            key,
+            prev: Some(prev_node),
+            next: Some(post_node),
+        })));
+
+        unsafe { prev_node.as_mut() }.next = node;
+        unsafe { post_node.as_mut() }.prev = node;
+
+        self.len += 1;
     }
 
     pub fn pop_back(&mut self) -> Option<T> {
